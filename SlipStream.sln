@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlipStream", "SlipStream\SlipStream.csproj", "{BDD081E8-0E66-4517-96A3-F6757DCDA1F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFmpeg.AutoGen", "..\..\FFmpeg.AutoGen-master\FFmpeg.AutoGen\FFmpeg.AutoGen.csproj", "{A536B02A-B0B1-4753-8328-17369EF09976}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFmpeg.AutoGen", "..\..\FFmpeg.AutoGen\FFmpeg.AutoGen\FFmpeg.AutoGen.csproj", "{A536B02A-B0B1-4753-8328-17369EF09976}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

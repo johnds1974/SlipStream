@@ -419,7 +419,6 @@ namespace SlipStream.ViewModels
                             ((WriteableBitmap)CurrentFrameImage).Lock();
                             ((WriteableBitmap)CurrentFrameImage).AddDirtyRect(new Int32Rect(0, 0, _videoStream.Width, _videoStream.Height));
                             ((WriteableBitmap)CurrentFrameImage).Unlock();
-                        ((WriteableBitmap)CurrentFrameImage).
 
 //                        }, null);
 
