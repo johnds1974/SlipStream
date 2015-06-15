@@ -9,6 +9,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -61,6 +62,8 @@ namespace SlipStream.ViewModels
                     InteropHelper.RegisterLibrariesSearchPath(ffmpegPath);
                     break;
             }
+
+            var mi = this.GetType().GetMethods();
 
         }
 
@@ -154,6 +157,8 @@ namespace SlipStream.ViewModels
                     // Asynchronously load this next frame...
 //                    LoadCurrentFrameAsync();
                     LoadCurrentFrame();
+
+                    Debug.WriteLine("CurrentFrame = {0} t:{1}", _currentFrame, Thread.CurrentThread.ManagedThreadId);
                 }
             }
         }
@@ -165,6 +170,7 @@ namespace SlipStream.ViewModels
         {
             get
             {
+                Debug.WriteLine("CurrentFrameImage.get t:{0}", Thread.CurrentThread.ManagedThreadId);
                 return _currentFrameImage;
             }
             private set
@@ -297,9 +303,42 @@ namespace SlipStream.ViewModels
         /// <summary>
         /// 
         /// </summary>
-        public async void PlayStream()
+        public void PlayStream()
         {
-            await PlayStreamAsync();
+//            await PlayStreamAsync();
+            Task.Factory.StartNew(() => {
+                PlayTheStream();
+            });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public async void ReadStream()
+        {
+            LoadMessage = "Reading all frames...";
+            Task.Factory.StartNew(() =>
+            {
+                long frame = CurrentFrame;
+                byte[] buff = null;
+                while((buff = ReadNextFrame()) != null) 
+                {
+                    OnUIThread(o => 
+                    {
+                        LoadMessage = string.Format("Read frame {0}...", frame);
+                    },
+                    null);
+                    frame++;
+                }
+            });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public async void NextFrame()
+        {
+            CurrentFrame++;
         }
 
         /// <summary>
@@ -308,6 +347,19 @@ namespace SlipStream.ViewModels
         public async void StopStream()
         {
             await StopStreamAsync();
+        }
+
+        /// <summary>
+        /// Reads the next frame from the stream.
+        /// </summary>
+        /// <returns>frame buffer.</returns>
+        private byte[] ReadNextFrame()
+        {
+            byte[] buffer = null;
+            if (_videoStream.ReadFrame(out buffer))
+            {
+            }
+            return buffer;
         }
 
         /// <summary>
@@ -341,18 +393,9 @@ namespace SlipStream.ViewModels
                         //// Copy the buffer to our pointer location...
                         //Marshal.Copy(buffer, 0, _framePtr, buffer.Length);
 
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            //var bs = BitmapSource.Create(
-                            //    _videoStream.Width,
-                            //    _videoStream.Height,
-                            //    72,
-                            //    72,
-                            //    PixelFormats.Rgb24,
-                            //    BitmapPalettes.BlackAndWhite,
-                            //    _framePtr,
-                            //    buffer.Length,
-                            //    _videoStream.Stride);
+//                        OnUIThread(o => {
+
+                            Debug.WriteLine("LoadCurrentFrame(), t:{0}", Thread.CurrentThread.ManagedThreadId);
 
                             if (CurrentFrameImage == null)
                             {
@@ -364,8 +407,6 @@ namespace SlipStream.ViewModels
                                     PixelFormats.Rgb24,
                                     null
                                     );
-
-
                             }
 
                             ((WriteableBitmap)CurrentFrameImage).WritePixels(
@@ -376,32 +417,15 @@ namespace SlipStream.ViewModels
                                 );
 
                             ((WriteableBitmap)CurrentFrameImage).Lock();
-                            ((WriteableBitmap)CurrentFrameImage).AddDirtyRect(
-                                new Int32Rect(0, 0, _videoStream.Width, _videoStream.Height));
+                            ((WriteableBitmap)CurrentFrameImage).AddDirtyRect(new Int32Rect(0, 0, _videoStream.Width, _videoStream.Height));
                             ((WriteableBitmap)CurrentFrameImage).Unlock();
+                        ((WriteableBitmap)CurrentFrameImage).
 
-                        });
-
-                        //OnUIThread(o =>
-                        //{
-                        //    var bs = BitmapSource.Create(
-                        //        _videoStream.Width,
-                        //        _videoStream.Height,
-                        //        72,
-                        //        72,
-                        //        PixelFormats.Rgb24,
-                        //        BitmapPalettes.BlackAndWhite,
-                        //        _framePtr,
-                        //        buffer.Length,
-                        //        _videoStream.Stride);
-
-                        //    CurrentFrameImage = bs;
-                        //},
-                        //null
-                        //);
+//                        }, null);
 
                     }
 
+/*
                     // Seek within our AudoStream to the same place as Video...
                     seekedts = _audioStream.Seek(ts, SeekOrigin.Begin);
 
@@ -410,6 +434,7 @@ namespace SlipStream.ViewModels
                     {
 
                     }
+*/
 
                 }
                 catch (Exception ex)
@@ -614,7 +639,7 @@ namespace SlipStream.ViewModels
                         CurrentFrame++;
 
                         // Wait around for the FrameRate interval...
-                        int interval = 500;// (int)(1000 / FrameRate);
+                        int interval = (int)(1000 / FrameRate);
 
                         await Task.Delay(interval);
                     }
@@ -629,6 +654,44 @@ namespace SlipStream.ViewModels
                 },
                 _cancellationTokenSource.Token
             );
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private void PlayTheStream()
+        {
+            if (_cancellationTokenSource == null)
+            {
+                _cancellationTokenSource = new CancellationTokenSource();
+            }
+
+            IsPlaying = true;
+
+            // Play each frame, until we are cancelled, or reached the end...
+            while (!_cancellationTokenSource.IsCancellationRequested && CurrentFrame <= FrameCount)
+            {
+                OnUIThread(o =>
+                {
+                    // Increment the current frame, which will load the actual frame image...
+                    CurrentFrame++;
+                }, null);
+
+                // Wait around for the FrameRate interval...
+                int interval = (int)(1000 / FrameRate);
+
+                Thread.Sleep(interval);
+            }
+
+            if (_cancellationTokenSource.IsCancellationRequested)
+            {
+                _cancellationTokenSource.Dispose();
+                _cancellationTokenSource = null;
+            }
+
+            IsPlaying = false;
         }
 
     }

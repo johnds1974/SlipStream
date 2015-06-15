@@ -1,4 +1,5 @@
 ﻿using Accord.Extensions.Imaging;
+using SlipStream.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,13 @@ namespace SlipStream.Views
         {
             InitializeComponent();
 
+        }
+
+        private void NextFrame_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindowViewModel m = this.DataContext as MainWindowViewModel;
+
+            m.NextFrame();
         }
     }
 }
