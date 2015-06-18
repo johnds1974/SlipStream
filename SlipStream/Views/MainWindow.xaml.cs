@@ -34,5 +34,12 @@ namespace SlipStream.Views
 
             m.NextFrame();
         }
+
+        private void PlayStream_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindowViewModel m = this.DataContext as MainWindowViewModel;
+
+            m.PlayStream();
+        }
     }
 }

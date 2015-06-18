@@ -26,7 +26,7 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Slider Grid.Row="2" Maximum="{Binding FrameCount}" Value="{Binding CurrentFrame}"  Margin="4" SmallChange="1" TickPlacement="Both" TickFrequency="1000" LargeChange="10"/>
+        <Slider Grid.Row="2" Maximum="{Binding FrameCount}" Value="{Binding CurrentFrame}"  Margin="4" SmallChange="1" TickPlacement="Both" TickFrequency="{Binding TickFrequency}" LargeChange="{Binding TickFrequency}"/>
         <StackPanel Grid.Row="3" Margin="4" Orientation="Vertical">
             <Grid>
                 <Grid.RowDefinitions>
@@ -40,16 +40,16 @@
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Current Frame" Margin="5" VerticalAlignment="Center"/>
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CurrentFrame}" VerticalAlignment="Center" />
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Frames" Margin="5" VerticalAlignment="Center"/>
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding FrameCount}" VerticalAlignment="Center" />
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Frame Rate" Margin="5" VerticalAlignment="Center"/>
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding FrameRate}" VerticalAlignment="Center" />
-                <TextBlock Grid.Row="3" Grid.Column="0" Text="Width" Margin="5" VerticalAlignment="Center"/>
-                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding FrameWidth}" VerticalAlignment="Center" />
-                <TextBlock Grid.Row="4" Grid.Column="0" Text="Height" Margin="5" VerticalAlignment="Center"/>
-                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding FrameHeight}" VerticalAlignment="Center" />
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Current Frame" Margin="2" VerticalAlignment="Center" FontSize="10"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CurrentFrame}" VerticalAlignment="Center" FontSize="10" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Frames" Margin="2" VerticalAlignment="Center" FontSize="10"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding FrameCount}" VerticalAlignment="Center" FontSize="10" />
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Frame Rate" Margin="2" VerticalAlignment="Center" FontSize="10"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding FrameRate}" VerticalAlignment="Center" FontSize="10" />
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Width" Margin="2" VerticalAlignment="Center" FontSize="10"/>
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding FrameWidth}" VerticalAlignment="Center" FontSize="10" />
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="Height" Margin="2" VerticalAlignment="Center" FontSize="10"/>
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding FrameHeight}" VerticalAlignment="Center" FontSize="10" />
             </Grid>
         </StackPanel>
         <StackPanel Grid.Row="4" Orientation="Horizontal">
